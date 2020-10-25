@@ -1,0 +1,5 @@
+name = wim2a
+description= oui
+core = 7.x
+files[] = wim2a.module
+configure = wim2a/monformulaire

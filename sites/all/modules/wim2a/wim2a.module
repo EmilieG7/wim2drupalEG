@@ -1,0 +1,98 @@
+<?php
+
+function wim2a_menu(){
+  $items['wim2a/monformulaire'] = array(
+    'title' => 'Mon Formulaire',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('wim2a_monformulaire'),
+    'access callback' => true,
+    'type' => MENU_CALLBACK,
+  );
+  $items['wim2a/pageformulaire'] = array(
+    'title' => 'Page Formulaire',
+    'page callback' => 'pageformulaire', //erreur ?
+    'access callback' => true,
+    'type' => MENU_CALLBACK,
+  );
+
+
+  return $items;
+}
+function wim2a_monformulaire($form, &$form_state) {
+  $form['nom'] = array(
+    '#type' => 'textfield',
+    '#title' =>'Nom :',
+    '#name' => 'nom',
+  );
+  $form['prenom'] = array(
+    '#type' => 'textfield',
+    '#title' =>'Prénom :',
+    '#name' => 'prenom',
+  );
+
+  $form['Genre'] = array(
+    '#type' => 'radios',
+    '#title' => t('Genre:'),
+    '#options' => array('femme'=>'femme','homme'=>'homme'),
+    '#required' => TRUE,
+  );
+
+  $form['Annee'] = array(
+    '#type' => 'select',
+    '#options' => array('1997' => '1997','1998' => '1998','1999'=> '1999','2000'=> '2000','2001'=> '2001','2002'=> '2002'),
+    '#required' => TRUE,
+  );
+
+  $form['valider'] = array(
+    '#type' => 'submit',
+    '#value' =>'Valider',
+  );
+
+  return $form;
+}
+
+function wim2a_monformulaire_validate($form, &$form_state){
+  if ($form_state['values']['nom']== '') {
+    form_set_error('nom', t('Vous devez saisir un nom'));
+  }
+  if ($form_state['values']['prenom']== ''){
+    form_set_error('prenom', t('Vous devez saisir un prénom.'));
+  }
+  if ($form_state['values']['Genre']== ''){
+    form_set_error('Genre', t('Vous devez selectionner un genre.'));
+  }
+  if ($form_state['values']['Annee']== ''){
+    form_set_error('Annee', t('Vous devez selectionner une année.'));
+  }
+}
+
+function wim2a_monformulaire_submit($form, &$form_state){
+  $data =array(
+    ':nom' => $form_state['values']['nom'],
+    ':prenom' => $form_state['values']['prenom'],
+    ':Genre' => $form_state['values']['Genre'],
+    ':Annee' => $form_state['values']['Annee'],
+
+  );
+  $sql = 'INSERT INTO wim2_etudiant (nom, prenom, Genre, Annee) VALUES ( :nom, :prenom, :Genre, :Annee)';
+  db_query($sql, $data);
+  drupal_set_message('Vos données ont été enregistrées');
+}
+
+function wim2a_pageformulaire() {
+ $form = array();
+ $form_state = array();
+ $page_array['paragraphe1'] = array(
+   '#prefix' => '<p>',
+   '#suffix' => '</p>',
+   '#markup' => 'Paragraphe avant le formulaire',
+ );
+ $page_array['form'] = drupal_get_form('wim2a_monformulaire');
+
+ $page_array['paragraphe2'] = array(
+  '#prefix' => '<p>',
+  '#suffix' => '</p>',
+  '#markup' => 'Paragraphe après le formulaire',
+ );
+ return $page_array;
+}
